@@ -1,13 +1,19 @@
-# Usa la imagen oficial de PHP con Apache
-FROM php:8.0-apache
+# Usa una imagen base de Debian e instala Ruby y Sinatra manualmente
+FROM debian:bullseye-slim
 
-# Establecer el directorio de trabajo en /var/www/html
-WORKDIR /var/www/html
+# Actualiza los repositorios e instala Ruby y dependencias necesarias
+RUN apt-get update -y && \
+    apt-get install -y ruby-full curl && \
+    gem install sinatra
 
-# Copiar el archivo PHP al contenedor
-COPY index.php /var/www/html/
+# Establece el directorio de trabajo
+WORKDIR /app
 
-# Exponer el puerto 80 para HTTP
-EXPOSE 80
+# Copia el archivo Ruby de tu aplicación al contenedor
+COPY app.rb /app
 
-# El contenedor ya tiene Apache configurado, por lo que no es necesario CMD
+# Expón el puerto en el que el servidor Sinatra escuchará
+EXPOSE 4567
+
+# Inicia el servidor Sinatra
+CMD ["ruby", "app.rb"]
